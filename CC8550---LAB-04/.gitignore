@@ -1,0 +1,14 @@
+# LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Graphviz (opcional: .dot são gerados de novo pelo script)
+# *.dot
