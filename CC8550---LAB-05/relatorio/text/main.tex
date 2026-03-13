@@ -1,0 +1,136 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage{booktabs}
+
+\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=1.5cm}
+\setlength{\parskip}{0.3em}
+\pagestyle{fancy}
+
+\lhead{CC8550 --- Simulação e Teste de Software}
+\chead{Aula 05}
+\rhead{2º Semestre 2025}
+\cfoot{Página \thepage}
+
+\title{
+    {\Large \textbf{Simulação e Teste de Software}} \\
+    {\Large \textbf{Aula 05 --- Teste de Mutação (Caixa Eletrônico)}}
+}
+
+\author{
+    \textbf{Aluno:} Lucas Rebouças Silva \\
+    \textbf{R.A.:} 22.122.048-6 \\[0.3cm]
+    \textbf{Professor:} Luciano Rossi \\
+    \textbf{Centro Universitário FEI} \\
+    Ciência da Computação
+}
+
+\date{2º Semestre de 2025}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Introdução}
+
+Neste laboratório foi desenvolvido um programa simples de \emph{caixa eletrônico}
+com cinco funcionalidades principais e um conjunto de testes automatizados.
+Foram aplicadas técnicas de teste de mutação manual e automática (\texttt{mutmut})
+para avaliar a eficácia da suíte de testes.
+
+\section{Descrição do Programa}
+
+O sistema de caixa eletrônico foi implementado no arquivo
+\texttt{caixa\_eletronico.py}. As cinco funcionalidades principais são:
+
+\begin{enumerate}
+  \item Consulta de saldo (\texttt{consultar\_saldo});
+  \item Depósito em conta (\texttt{depositar});
+  \item Saque em conta (\texttt{sacar});
+  \item Transferência entre contas (\texttt{transferir});
+  \item Emissão de extrato (\texttt{extrato}).
+\end{enumerate}
+
+\section{Estratégia de Testes}
+
+Os testes foram escritos com \texttt{pytest} no arquivo
+\texttt{test\_caixa\_eletronico.py}. Foram especificados dez casos de teste,
+cobrindo depósitos válidos e inválidos, saques válidos e inválidos,
+transferências e extrato.
+
+\section{Mutantes Manuais}
+
+\subsection*{O que são mutantes mortos e sobreviventes?}
+
+Um \textbf{mutante morto} é uma versão do programa em que foi introduzida uma alteração (mutação) e, ao rodar a suíte de testes, \emph{pelo menos um teste falha}. Isso indica que os testes detectaram a diferença entre o código original e o mutado: o defeito simulado foi revelado e o mutante é considerado ``morto'' pela suíte. Já um \textbf{mutante sobrevivente} é aquele em que todos os testes continuam passando mesmo com o código alterado; nesse caso, a suíte não conseguiu distinguir o mutante do programa original, o que sugere lacuna na cobertura ou na assertividade dos testes. O objetivo é ter uma suíte que mate o máximo possível de mutantes (alto Mutation Score).
+
+Foi criada uma cópia do código em \texttt{caixa\_eletronico\_mutante.py}
+com mutantes manuais (ex.: permitir depósito zero; impedir saque de todo o saldo;
+transferência na direção errada; extrato em ordem invertida).
+
+Fórmula do Mutation Score:
+\[
+MS = \frac{\text{mutantes mortos}}{\text{mutantes totais} - \text{mutantes equivalentes}} \times 100\%.
+\]
+
+\begin{table}[H]
+  \centering
+  \caption{Resultados dos mutantes manuais}
+  \label{tab:mutantes-manuais}
+  \begin{tabular}{lcc}
+    \toprule
+    & Quantidade & MS (\%) \\
+    \midrule
+    Mutantes totais                & (preencher) & \\
+    Mutantes equivalentes           & (preencher) & \\
+    Mutantes mortos                 & (preencher) & \\
+    Mutantes sobreviventes          & (preencher) & \\
+    \midrule
+    \textbf{Mutation Score (MS)}    & & (preencher) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Mutação Automática com \texttt{mutmut}}
+
+Foi utilizada a ferramenta \texttt{mutmut} (configurada em \texttt{pyproject.toml}).
+Comandos: \texttt{mutmut run} e \texttt{mutmut results}.
+
+\begin{table}[H]
+  \centering
+  \caption{Resultados do \texttt{mutmut}}
+  \label{tab:mutmut}
+  \begin{tabular}{lcc}
+    \toprule
+    & Quantidade & MS (\%) \\
+    \midrule
+    Mutantes totais                & (preencher) & \\
+    Mutantes equivalentes           & (preencher) & \\
+    Mutantes mortos                 & (preencher) & \\
+    Mutantes sobreviventes          & (preencher) & \\
+    \midrule
+    \textbf{Mutation Score (MS)}    & & (preencher) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Discussão e Conclusão}
+
+(Comparar resultados dos mutantes manuais com os do \texttt{mutmut};
+discutir mutantes sobreviventes e possíveis novos testes.)
+
+\end{document}

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab 05 — Teste de Mutação | Caixa Eletrônico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0f12;
+      --bg-card: #18181d;
+      --bg-code: #1e1e24;
+      --border: #2a2a32;
+      --text: #e4e4e9;
+      --text-muted: #8b8b98;
+      --accent: #f59e0b;
+      --accent-dim: #d97706;
+      --kill: #22c55e;
+      --survive: #ef4444;
+      --code-keyword: #c084fc;
+      --code-string: #34d399;
+      --code-comment: #6b7280;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 50% 50%, rgba(245, 158, 11, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+      position: relative;
+    }
+
+    .hero .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .hero .meta {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .hero .meta span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* Container */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    section {
+      padding: 4rem 0;
+      margin-top: 3rem;
+      border-top: 1px solid var(--border);
+    }
+
+    section:first-of-type {
+      margin-top: 0;
+      border-top: none;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    h2::before {
+      content: '';
+      width: 4px;
+      height: 1.4em;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(245, 158, 11, 0.3);
+      box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.1);
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Code blocks */
+    .code-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .code-wrap { grid-template-columns: 1fr; }
+    }
+
+    .code-block {
+      background: var(--bg-code);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .code-block .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.5rem 1rem;
+      background: rgba(0,0,0,0.2);
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .code-block .label.original { border-left: 3px solid var(--kill); }
+    .code-block .label.mutant { border-left: 3px solid var(--survive); }
+
+    pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .line { display: block; }
+    .line.del { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+    .line.add { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+    .line.mut { background: rgba(245, 158, 11, 0.2); color: var(--accent); }
+
+    .kw { color: var(--code-keyword); }
+    .st { color: var(--code-string); }
+    .cm { color: var(--code-comment); font-style: italic; }
+
+    /* Status badge */
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      margin-left: 0.5rem;
+    }
+
+    .badge.killed { background: rgba(34, 197, 94, 0.2); color: var(--kill); }
+    .badge.survived { background: rgba(239, 68, 68, 0.2); color: var(--survive); }
+
+    /* Formula box */
+    .formula-box {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.02) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .formula-box .formula {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem;
+      color: var(--accent);
+      margin: 1rem 0;
+    }
+
+    .formula-box .legend {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* Info / explanation box */
+    .info-box {
+      background: rgba(34, 197, 94, 0.06);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .info-box:first-of-type {
+      margin-top: 2rem;
+    }
+
+    .info-box h4 {
+      font-size: 0.9rem;
+      color: var(--kill);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .info-box p {
+      color: var(--text);
+      font-size: 0.95rem;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .req-list {
+      list-style: none;
+    }
+
+    .req-list li {
+      padding: 0.5rem 0;
+      padding-left: 1.75rem;
+      position: relative;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .req-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--kill);
+      font-weight: 700;
+    }
+
+    /* Func list */
+    .func-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .func-list li {
+      list-style: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--accent);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Animations */
+    .card, .formula-box, table {
+      animation: fadeUp 0.6s ease-out backwards;
+    }
+
+    .card:nth-child(1) { animation-delay: 0.05s; }
+    .card:nth-child(2) { animation-delay: 0.1s; }
+    .card:nth-child(3) { animation-delay: 0.15s; }
+    .card:nth-child(4) { animation-delay: 0.2s; }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <h1>Lab 05 — Teste de Mutação</h1>
+    <p class="subtitle">Caixa Eletrônico · CC8550 Simulação e Teste de Software</p>
+    <div class="meta">
+      <p><span>Aluno:</span> Lucas Rebouças Silva</p>
+      <p><span>R.A.:</span> 22.122.048-6</p>
+      <p><span>Professor:</span> Luciano Rossi · FEI</p>
+    </div>
+    <p class="scroll-hint">↓ Role para ver os mutantes</p>
+  </header>
+
+  <main>
+    <section class="container">
+      <h2>Requisitos do lab</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1rem;">
+        Checklist dos itens solicitados e como este projeto atende a cada um.
+      </p>
+      <ul class="req-list">
+        <li><strong>Programa com 5 funcionalidades</strong> — Caixa eletrônico: consultar saldo, depositar, sacar, transferir, extrato.</li>
+        <li><strong>No mínimo 10 testes</strong> — 10 testes em <code>test_caixa_eletronico.py</code> cobrindo as 5 funcionalidades.</li>
+        <li><strong>Cópia do programa com mutantes manuais</strong> — <code>caixa_eletronico_mutante.py</code> com 4 mutações introduzidas à mão.</li>
+        <li><strong>1) Testes no código original</strong> — <code>pytest</code> no original: todos os 10 testes passam.</li>
+        <li><strong>2) Testes no código mutante</strong> — Ao rodar os testes no mutante, vários falham; anotar quantos erros (mutantes mortos).</li>
+        <li><strong>3) mutmut no código original</strong> — <code>mutmut run</code> gera mutantes automáticos; <code>mutmut results</code> mostra mortos/sobreviventes (no Windows usar WSL).</li>
+        <li><strong>4) Fórmula e comparação</strong> — Calcular MS = mortos/(totais − equivalentes)×100% para os mutantes manuais e para o mutmut; comparar os dois resultados no relatório.</li>
+      </ul>
+    </section>
+
+    <section class="container">
+      <h2>Funcionalidades do programa</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+        O sistema implementa um caixa eletrônico mínimo com cinco operações sobre contas (saldo, depósito, saque, transferência e extrato).
+      </p>
+      <ul class="func-list">
+        <li>consultar_saldo()</li>
+        <li>depositar()</li>
+        <li>sacar()</li>
+        <li>transferir()</li>
+        <li>extrato()</li>
+      </ul>
+    </section>
+
+    <section class="container">
+      <h2>O que são mutantes mortos?</h2>
+      <div class="info-box">
+        <h4>Mutante morto</h4>
+        <p>É quando a suíte de testes <strong>falha</strong> ao rodar no código mutado: pelo menos um teste que passava no original passa a falhar. Isso mostra que a alteração (o “defeito” simulado) foi detectada — o mutante é <strong>morto</strong> pelos testes.</p>
+      </div>
+      <div class="info-box" style="background: rgba(239, 68, 68, 0.06); border-color: rgba(239, 68, 68, 0.25);">
+        <h4 style="color: var(--survive);">Mutante sobrevivente</h4>
+        <p>É quando todos os testes continuam passando mesmo com o código alterado. A suíte não consegue distinguir o mutante do programa original, o que indica lacuna na cobertura ou nas asserções. O objetivo é ter uma suíte que mate o máximo de mutantes (alto Mutation Score).</p>
+      </div>
+    </section>
+
+    <section class="container">
+      <h2>Mutantes manuais</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+        Código original vs. versão mutada. Em verde: correto; em vermelho/laranja: mutação. Os testes que falham “matam” o mutante.
+      </p>
+
+      <div class="card">
+        <h3>Mutante 1 — Depósito zero permitido <span class="badge killed">Morto</span></h3>
+        <p>Condição alterada de <code>valor &lt;= 0</code> para <code>valor &lt; 0</code>, permitindo depósito de R$ 0,00. O teste <code>test_nao_permite_deposito_negativo_ou_zero</code> falha e mata o mutante.</p>
+        <div class="code-wrap">
+          <div class="code-block">
+            <div class="label original">Original</div>
+            <pre><span class="line"><span class="kw">if</span> valor &lt;= <span class="st">0</span>:</span>
+<span class="line">    <span class="kw">raise</span> ValueError(<span class="st">"Valor de depósito deve ser positivo."</span>)</span></pre>
+          </div>
+          <div class="code-block">
+            <div class="label mutant">Mutante</div>
+            <pre><span class="line mut"><span class="kw">if</span> valor &lt; <span class="st">0</span>:</span>
+<span class="line">    <span class="kw">raise</span> ValueError(<span class="st">"Valor de depósito deve ser positivo."</span>)</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Mutante 2 — Não permite sacar todo o saldo <span class="badge killed">Morto</span></h3>
+        <p><code>valor > conta.saldo</code> trocado por <code>valor >= conta.saldo</code>. Quem tenta sacar exatamente o saldo recebe erro. O teste <code>test_pode_sacar_todo_saldo</code> mata o mutante.</p>
+        <div class="code-wrap">
+          <div class="code-block">
+            <div class="label original">Original</div>
+            <pre><span class="line"><span class="kw">if</span> valor &gt; conta.saldo:</span>
+<span class="line">    <span class="kw">raise</span> ValueError(<span class="st">"Saldo insuficiente para saque."</span>)</span></pre>
+          </div>
+          <div class="code-block">
+            <div class="label mutant">Mutante</div>
+            <pre><span class="line mut"><span class="kw">if</span> valor &gt;= conta.saldo:</span>
+<span class="line">    <span class="kw">raise</span> ValueError(<span class="st">"Saldo insuficiente para saque."</span>)</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Mutante 3 — Transferência na direção errada <span class="badge killed">Morto</span></h3>
+        <p>Ordem invertida: debita da conta destino e credita na origem. O teste <code>test_transferencia_move_saldo_correto</code> detecta os saldos incorretos e mata o mutante.</p>
+        <div class="code-wrap">
+          <div class="code-block">
+            <div class="label original">Original</div>
+            <pre><span class="line">sacar(conta_origem, valor)</span>
+<span class="line">depositar(conta_destino, valor)</span></pre>
+          </div>
+          <div class="code-block">
+            <div class="label mutant">Mutante</div>
+            <pre><span class="line mut">sacar(conta_destino, valor)</span>
+<span class="line mut">depositar(conta_origem, valor)</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Mutante 4 — Extrato em ordem invertida <span class="badge killed">Morto</span></h3>
+        <p><code>list(conta.historico)</code> trocado por <code>list(reversed(conta.historico))</code>. O teste <code>test_extrato_registra_operacoes_na_ordem</code> exige ordem cronológica e mata o mutante.</p>
+        <div class="code-wrap">
+          <div class="code-block">
+            <div class="label original">Original</div>
+            <pre><span class="line"><span class="kw">return</span> list(conta.historico)</span></pre>
+          </div>
+          <div class="code-block">
+            <div class="label mutant">Mutante</div>
+            <pre><span class="line mut"><span class="kw">return</span> list(reversed(conta.historico))</span></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container">
+      <h2>Resultados dos testes</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+        Código original: 10 testes passando. Código mutante: vários testes falham, evidenciando que os mutantes foram mortos pela suíte.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Testes passando</th>
+            <th>Testes falhando</th>
+            <th>Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Original (caixa_eletronico.py)</td>
+            <td>10</td>
+            <td>0</td>
+            <td><span class="badge killed">Todos passam</span></td>
+          </tr>
+          <tr>
+            <td>Mutante (caixa_eletronico_mutante.py)</td>
+            <td>—</td>
+            <td>4+</td>
+            <td><span class="badge survived">Mutantes mortos</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="container">
+      <h2>Mutation Score</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1rem;">
+        Mede a qualidade da suíte de testes: qual fração dos mutantes foi morta.
+      </p>
+      <div class="formula-box">
+        <div class="formula">
+          MS = (mutantes mortos) / (mutantes totais − equivalentes) × 100%
+        </div>
+        <div class="legend">
+          No cenário manual: 4 mutantes totais, 4 mortos → MS = 100% (todos detectados).
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Lucas Rebouças Silva · R.A. 22.122.048-6</p>
+    <p>CC8550 — Simulação e Teste de Software · Centro Universitário FEI · 2º Semestre 2025</p>
+  </footer>
+</body>
+</html>
