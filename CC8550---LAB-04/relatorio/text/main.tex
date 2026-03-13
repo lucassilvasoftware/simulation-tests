@@ -240,7 +240,7 @@ def analisar(numeros):
 \caption{GFC Exercício 6}
 \end{figure}
 
-$V(G) = 4$. C0/C1: cobrir total+=n, total-=1, continue, return Acima/Abaixo. Casos (resumo): []$\to$Abaixo; [6]$\to$Abaixo; [6,8]$\to$Acima; [1],[-2]$\to$Abaixo; [4,3,8],[6,-2,8],[0,6,8]$\to$Acima; [2,4,1]$\to$Abaixo. Def-uso \texttt{total}: def(2,5,7), use(10,11-12).
+$V(G) = 5$. C0/C1: cobrir total+=n, total-=1, continue, return Acima/Abaixo e o desvio de laço (entrada/saída do \texttt{for}). Casos (resumo): []$\to$Abaixo; [6]$\to$Abaixo; [6,8]$\to$Acima; [1],[-2]$\to$Abaixo; [4,3,8],[6,-2,8],[0,6,8]$\to$Acima; [2,4,1]$\to$Abaixo. Def-uso \texttt{total}: def(2,5,7), use(10,11-12).
 
 \newpage
 
@@ -268,10 +268,10 @@ def desconto(preco, cliente_vip):
 \caption{GFC Exercício 7 (def-uso)}
 \end{figure}
 
-$V(G) = 2$. A análise de fluxo de dados considera as variáveis \texttt{total} (definições nas linhas 2, 5 e 7; usos nas linhas 6 e 8) e \texttt{desconto\_valor} (definição na linha 4 e uso na linha 5). Uma suíte enxuta de testes que explora os caminhos com e sem cliente VIP, bem como valores acima e abaixo do piso de R\$50, é suficiente para cobrir todos os pares def-uso relevantes (All-Defs e All-Uses).
+$V(G) = 3$. As decisões são o teste de \texttt{cliente\_vip} e o teste de \texttt{total < 50}, mais o caminho sequencial base. A análise de fluxo de dados considera as variáveis \texttt{total} (definições nas linhas 2, 5 e 7; usos nas linhas 6 e 8) e \texttt{desconto\_valor} (definição na linha 4 e uso na linha 5). Uma suíte enxuta de testes que explora os caminhos com e sem cliente VIP, bem como valores acima e abaixo do piso de R\$50, é suficiente para cobrir todos os pares def-uso relevantes (All-Defs e All-Uses).
 
 \section{Resumo e Conclusões}
 
-Hierarquia: C0 $\leq$ C1 $\leq$ CC $\leq$ caminhos; All-Defs/All-Uses complementam. Resumo: 7 exercícios, V(G) total 17, 39+ casos de teste. Recomendações: atingir no mínimo C1; usar CC em condições compostas; All-Uses em funções críticas.
+Hierarquia: C0 $\leq$ C1 $\leq$ CC $\leq$ caminhos; All-Defs/All-Uses complementam. Resumo: 7 exercícios, V(G) total 19, 39+ casos de teste. Recomendações: atingir no mínimo C1; usar CC em condições compostas; All-Uses em funções críticas.
 
 \end{document}
