@@ -50,7 +50,7 @@
 
 % Cabecalho e Rodape
 \lhead{CC8550 --- Simulacao e Teste de Software}
-\chead{Aula 04 --- Cobertura Estrutural}
+\chead{Aula 04}
 \rhead{2º Semestre 2025}
 \cfoot{Página \thepage}
 
@@ -77,15 +77,6 @@
 
 \newpage
 \tableofcontents
-\newpage
-
-% ============================================================================
-% INTRODUCAO
-% ============================================================================
-\section{Introdução}
-
-Solução dos 7 exercícios da Aula 04 (caixa-branca, cobertura estrutural): 7 funções em Python, casos de teste, GFCs gerados por \texttt{scripts/gerar\_grafos.py} (Graphviz), análise de V(G), C0/C1/CC e fluxo de dados. Código em \texttt{scripts/}; guia de estudo em \texttt{cobertura-estrutural.md}.
-
 \newpage
 
 % ============================================================================
@@ -245,7 +236,7 @@ def analisar(numeros):
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.72\textwidth]{ex6_gfc}
+\includegraphics[width=0.4\textwidth]{ex6_gfc}
 \caption{GFC Exercício 6}
 \end{figure}
 
@@ -273,13 +264,11 @@ def desconto(preco, cliente_vip):
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.65\textwidth]{ex7_gfc}
+\includegraphics[width=0.35\textwidth]{ex7_gfc}
 \caption{GFC Exercício 7 (def-uso)}
 \end{figure}
 
-$V(G) = 2$. \texttt{total}: def(2,5,7), use(6,8). \texttt{desconto\_valor}: def(4), use(5). 6 du-pairs. Casos: (100,F)$\to$100; (40,F)$\to$50; (100,T)$\to$80; (40,T)$\to$50; (60,F)$\to$60; (150,T)$\to$120. All-Defs e All-Uses cobertos.
-
-\newpage
+$V(G) = 2$. A análise de fluxo de dados considera as variáveis \texttt{total} (definições nas linhas 2, 5 e 7; usos nas linhas 6 e 8) e \texttt{desconto\_valor} (definição na linha 4 e uso na linha 5). Uma suíte enxuta de testes que explora os caminhos com e sem cliente VIP, bem como valores acima e abaixo do piso de R\$50, é suficiente para cobrir todos os pares def-uso relevantes (All-Defs e All-Uses).
 
 \section{Resumo e Conclusões}
 
