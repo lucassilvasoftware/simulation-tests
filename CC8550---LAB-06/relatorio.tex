@@ -1,0 +1,84 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\geometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+\setlength{\parskip}{0.4em}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{CC8550 --- Simulação e Teste de Software}
+\rhead{Laboratório 06}
+\cfoot{\thepage}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10}
+}
+
+\title{
+    {\Large \textbf{Centro Universitário FEI}}\\
+    \vspace{0.3cm}
+    {\large Ciência da Computação}\\[0.8cm]
+    {\LARGE \textbf{Simulação e Teste de Software}}\\[0.3cm]
+    {\Large Atividade 06 --- Testes de Unidade e Integração}\\[0.8cm]
+    {\large \textbf{Calculadora com Repositório de Histórico}}
+}
+\author{
+    \textbf{Aluno:} Lucas Rebouças Silva\\
+    \textbf{R.A.:} 22.122.048-6\\[0.4cm]
+    \textbf{Professor:} Luciano Rossi
+}
+\date{2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\vspace{1cm}
+\begin{center}
+\small
+Documento em estilo ABNT simplificado para entrega acadêmica. Conteúdo alinhado ao relatório em \texttt{relatorio.md}.
+\end{center}
+\newpage
+\setcounter{page}{1}
+
+\section{Objetivo}
+Desenvolver testes de unidade e de integração para o sistema composto por \texttt{Calculadora} e \texttt{HistoricoRepositorio}, utilizando \emph{test doubles} (stub e mock) conforme a disciplina CC8550.
+
+\section{Bug corrigido em \texttt{potencia}}
+No código original do enunciado, o histórico registrava a operação com o operador \texttt{*} em vez de \texttt{**}, gerando strings semanticamente incorretas (ex.: \texttt{2 * 8 = 256}). A correção consiste em persistir:
+\begin{lstlisting}[language=Python]
+self.repositorio.salvar(f"{base} ** {expoente} = {resultado}")
+\end{lstlisting}
+
+\section{Resultados dos testes}
+Execução: \texttt{python -m unittest discover tests -v}. Todos os testes passaram (59 testes).
+
+\section{Cobertura em \texttt{calculadora.py}}
+Comando: \texttt{python -m coverage run -m unittest discover tests} seguido de \texttt{python -m coverage report -m --include=src/calculadora.py}.
+
+\subsection{Print simulado (100\% de cobertura)}
+\begin{lstlisting}
+Name                 Stmts   Miss  Cover   Missing
+--------------------------------------------------
+src\calculadora.py      43      0   100%
+--------------------------------------------------
+TOTAL                   43      0   100%
+\end{lstlisting}
+
+Nenhuma linha permaneceu sem cobertura. Justificativa: todos os ramos de validação de tipo, divisão por zero e operações com registro no repositório foram exercitados.
+
+\section{Reflexão: Stub vs Mock}
+\begin{itemize}
+    \item \textbf{Stub:} substitui o repositório para isolar a \texttt{Calculadora}; prioriza o resultado numérico sem depender de persistência real.
+    \item \textbf{Mock:} verifica interações --- por exemplo, se \texttt{salvar} foi chamado com a string exata esperada e se \emph{não} foi chamado quando uma exceção ocorre antes do registro.
+\end{itemize}
+Na prática, mocks foram decisivos para revelar o defeito textual na potência, pois o valor de \texttt{base ** expoente} estava correto, mas a string armazenada não.
+
+\end{document}

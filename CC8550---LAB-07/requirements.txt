@@ -1,0 +1,3 @@
+# unittest: biblioteca padrao.
+# coverage: opcional, para relatorio de cobertura (mesmo comando do PDF).
+coverage>=7.0.0

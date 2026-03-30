@@ -9,7 +9,7 @@ Repositório unificado dos laboratórios da disciplina CC8550 — Simulação e 
 
 ## Localização
 
-Este repositório contém quatro laboratórios em pastas na raiz:
+Este repositório contém os laboratórios da disciplina em pastas na raiz:
 
 | Pasta | Conteúdo |
 |-------|----------|
@@ -17,6 +17,9 @@ Este repositório contém quatro laboratórios em pastas na raiz:
 | `CC8550---LAB-02/` | Laboratório 2 — Validação de CPF |
 | `CC8550---LAB-03/` | Laboratório 3 — Cálculo de Frete |
 | `CC8550---LAB-04/` | Laboratório 4 — Cobertura estrutural e relatório |
+| `CC8550---LAB-05/` | Laboratório 5 — Teste de mutação |
+| `CC8550---LAB-06/` | Laboratório 6 — Testes de unidade e integração (calculadora + histórico) |
+| `CC8550---LAB-07/` | Laboratório 7 — TDD e sistema de estoque |
 
 Cada pasta é um projeto independente (código, testes e documentação). Não há submódulos Git; todo o conteúdo está versionado neste repositório único.
 
@@ -35,6 +38,15 @@ Cada pasta é um projeto independente (código, testes e documentação). Não h
 
 4. **[Laboratório 4 — Cobertura estrutural](CC8550---LAB-04/)**  
    Exercícios de cobertura, grafos de fluxo de controle, scripts e relatório em LaTeX em `relatorio/text/`.
+
+5. **[Laboratório 5 — Teste de mutação](CC8550---LAB-05/)**  
+   Caixa eletrônico, mutantes e ferramenta `mutmut`.
+
+6. **[Laboratório 6 — Unidade e integração](CC8550---LAB-06/)**  
+   Calculadora com `HistoricoRepositorio`, `unittest`, `coverage` e relatório em Markdown/LaTeX.
+
+7. **[Laboratório 7 — TDD / Estoque](CC8550---LAB-07/)**  
+   Classe `Estoque` desenvolvida com ciclo Red-Green-Refactor e `unittest`.
 
 ---
 

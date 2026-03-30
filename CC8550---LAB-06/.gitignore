@@ -1,0 +1,7 @@
+htmlcov/
+.coverage
+coverage.xml
+*.aux
+*.log
+*.out
+*.toc
