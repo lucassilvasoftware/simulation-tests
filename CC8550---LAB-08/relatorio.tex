@@ -1,0 +1,89 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\geometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+\setlength{\parskip}{0.4em}
+\setlength{\headheight}{14pt}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{CC8550 --- Simulacao e Teste de Software}
+\rhead{Laboratorio 08}
+\cfoot{\thepage}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10}
+}
+
+\title{
+    {\Large \textbf{Centro Universitario FEI}}\\
+    \vspace{0.3cm}
+    {\large Ciencia da Computacao}\\[0.8cm]
+    {\LARGE \textbf{Simulacao e Teste de Software}}\\[0.3cm]
+    {\Large Atividade 08 --- Suite de Testes para API REST}\\[0.8cm]
+    {\large \textbf{DummyJSON API}}
+}
+\author{
+    \textbf{Aluno:} Lucas Reboucas Silva\\
+    \textbf{R.A.:} 22.122.048-6\\[0.4cm]
+    \textbf{Professor:} Luciano Rossi
+}
+\date{2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\vspace{1cm}
+\begin{center}
+\small
+Relatorio academico simplificado sobre a implementacao de testes de sistema para API REST publica.
+\end{center}
+\newpage
+
+\section{Objetivo}
+Construir uma suite de testes automatizados para API REST publica usando \texttt{requests}, \texttt{pytest} e \texttt{jsonschema}, validando codigos de status, schema, autenticacao, operacoes CRUD, fixture e desempenho.
+
+\section{API escolhida e justificativa}
+A API escolhida foi a \textbf{DummyJSON} (\url{https://dummyjson.com/docs}), pois disponibiliza endpoints publicos para leitura e manipulacao simulada de recursos (\texttt{/posts}) e endpoint de autenticacao (\texttt{/auth/login}), atendendo aos requisitos do laboratorio em um ambiente simples.
+
+\section{Estrutura do projeto}
+Arquivos principais do LAB-08:
+\begin{itemize}
+    \item \texttt{test\_api.py}: suite de testes em \texttt{pytest};
+    \item \texttt{requirements.txt}: dependencias da atividade;
+    \item \texttt{README.md}: instrucoes e descricao dos testes;
+    \item \texttt{relatorio.tex}: documentacao deste laboratorio.
+\end{itemize}
+
+\section{Cenarios de teste implementados}
+Os testes cobrem os seguintes itens:
+\begin{enumerate}
+    \item GET em colecao (\texttt{/posts}) com status 200 e lista nao vazia;
+    \item GET em recurso existente com validacao de schema;
+    \item GET em recurso inexistente (\texttt{/posts/0}) com status 404;
+    \item POST para criacao (\texttt{/posts/add}) com status 201 e identificador no retorno;
+    \item PATCH para atualizacao de campo (\texttt{/posts/1});
+    \item DELETE (\texttt{/posts/1}) com status 200/204;
+    \item envio de payload invalido com retorno 4xx;
+    \item autenticacao em \texttt{/auth/login} com e sem credencial completa;
+    \item uso de \texttt{@pytest.fixture} para payload reutilizavel;
+    \item tempo de resposta inferior a 2 segundos.
+\end{enumerate}
+
+\section{Exemplo de comando}
+\begin{lstlisting}[language=bash]
+pytest test_api.py -v
+\end{lstlisting}
+
+\section{Conclusao}
+A suite implementada atende os requisitos propostos da Atividade Pratica do LAB-08, validando comportamento funcional e nao funcional basico (tempo de resposta). A abordagem com API publica permitiu exercitar cenarios reais de integracao HTTP sem uso de ferramentas graficas.
+
+\end{document}

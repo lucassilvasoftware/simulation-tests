@@ -1,0 +1,92 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\geometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+\setlength{\parskip}{0.4em}
+\setlength{\headheight}{14pt}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{CC8550 --- Simulacao e Teste de Software}
+\rhead{Atividade 09}
+\cfoot{\thepage}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10}
+}
+
+\title{
+    {\Large \textbf{Centro Universitario FEI}}\\
+    \vspace{0.3cm}
+    {\large Ciencia da Computacao}\\[0.8cm]
+    {\LARGE \textbf{Simulacao e Teste de Software}}\\[0.3cm]
+    {\Large Atividade 09 --- Sistema Task Manager}\\[0.8cm]
+    {\large \textbf{Testes orientados a objetos e componentes}}
+}
+\author{
+    \textbf{Aluno:} Lucas Reboucas Silva\\
+    \textbf{R.A.:} 22.122.048-6\\[0.4cm]
+    \textbf{Professor:} Luciano Rossi
+}
+\date{1o Semestre de 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\newpage
+\setcounter{page}{1}
+
+\section{Objetivo}
+Implementar um sistema simples de gerenciamento de tarefas em Python e validar seu comportamento com testes automatizados de unidade e de componente, conforme os conceitos da Aula 09.
+
+\section{Implementacao}
+O projeto foi organizado em tres partes principais:
+\begin{itemize}
+    \item \texttt{Task}: modela uma tarefa com id, titulo, descricao, prioridade, prazo e status.
+    \item \texttt{InMemoryStorage}: armazena tarefas em memoria com operacoes de adicionar, buscar, listar e remover.
+    \item \texttt{TaskRepository}: camada de persistencia que atribui IDs e delega acesso ao storage.
+\end{itemize}
+
+Na classe \texttt{Task}, o metodo \texttt{validar()} garante:
+\begin{itemize}
+    \item titulo com pelo menos 3 caracteres;
+    \item prazo nao pode estar no passado.
+\end{itemize}
+Tambem foi implementada verificacao para impedir atribuicao de status fora do enum \texttt{Status}.
+
+\section{Estrategia de testes}
+\subsection{Testes unitarios (Task)}
+Nos testes de \texttt{Task}, a classe e exercitada de forma isolada, sem mocks, com foco em:
+\begin{itemize}
+    \item teste de estado inicial;
+    \item validacao de titulo e prazo com \texttt{pytest.raises};
+    \item ciclo de vida com transicao valida e transicao invalida de status.
+\end{itemize}
+
+\subsection{Testes de componente (TaskRepository)}
+Nos testes de \texttt{TaskRepository}, a logica interna do repositorio e real, enquanto a dependencia externa (\texttt{storage}) e mockada.
+\begin{itemize}
+    \item \textbf{Mock}: verificar se \texttt{storage.add()} foi chamado com os argumentos corretos.
+    \item \textbf{Stub}: configurar \texttt{return\_value} de \texttt{storage.get()} para testar delegacao.
+    \item \textbf{Interacao entre metodos}: salvar e depois buscar por id.
+\end{itemize}
+
+\section{Resultados}
+Comando utilizado:
+\begin{lstlisting}
+pytest -v
+\end{lstlisting}
+
+Resultado esperado: todos os testes de \texttt{tests/test\_task.py} e \texttt{tests/test\_repository.py} passando, cobrindo os requisitos obrigatorios da atividade.
+
+\section{Conclusao}
+O laboratorio permitiu aplicar, na pratica, testes de estado, fixtures (setup), isolamento por mock/stub e validacao de colaboracao entre metodos. A separacao entre teste unitario e teste de componente ficou clara na diferenca entre \texttt{Task} (isolada) e \texttt{TaskRepository} (com dependencia externa mockada).
+
+\end{document}
