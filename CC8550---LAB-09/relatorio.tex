@@ -61,22 +61,54 @@ Na classe \texttt{Task}, o metodo \texttt{validar()} garante:
 \end{itemize}
 Tambem foi implementada verificacao para impedir atribuicao de status fora do enum \texttt{Status}.
 
+\section{Tipos de testes}
+
+\subsection{Teste de Unidade}
+\textbf{Definicao}: Testa uma classe ou funcao isolada, sem dependencias externas. \\
+\textbf{Foco}: Validar logica interna e regras de negocio. \\
+\textbf{Caracteristica}: Rapido, nao requer banco de dados ou chamadas HTTP. \\
+\textbf{Exemplo no LAB-09}: Testes da classe \texttt{Task} validam validacoes de titulo e prazo isoladamente.
+
+\subsection{Teste de Componente}
+\textbf{Definicao}: Testa um componente que colabora com dependencias externas, mas essas dependencias sao mockadas (simuladas). \\
+\textbf{Foco}: Validar interacao entre componentes e delegacao correta de responsabilidades. \\
+\textbf{Caracteristica}: Mais rapido que teste de integracao (pois usa mocks), mas mais lento que unitario. \\
+\textbf{Exemplo no LAB-09}: Testes de \texttt{TaskRepository} mockam \texttt{storage} para validar se repository chama storage corretamente.
+
 \section{Estrategia de testes}
+
 \subsection{Testes unitarios (Task)}
-Nos testes de \texttt{Task}, a classe e exercitada de forma isolada, sem mocks, com foco em:
-\begin{itemize}
-    \item teste de estado inicial;
-    \item validacao de titulo e prazo com \texttt{pytest.raises};
-    \item ciclo de vida com transicao valida e transicao invalida de status.
-\end{itemize}
+Nos testes de \texttt{Task}, a classe e exercitada de forma isolada, sem mocks.
+
+\subsubsection{Teste 1: Estado inicial da tarefa}
+Instancia \texttt{Task} com parametros validos e verifica se atributos foram atribuidos corretamente e status inicial e \texttt{PENDENTE}.
+
+\subsubsection{Teste 2: Validacao de titulo muito curto}
+Tenta criar tarefa com titulo de 1-2 caracteres. Usa \texttt{pytest.raises(ValueError)} para confirmar que \texttt{validar()} lanca excecao com mensagem esperada. Testa regra: titulo minimo 3 caracteres.
+
+\subsubsection{Teste 3: Validacao de prazo no passado}
+Tenta criar tarefa com prazo anterior a \texttt{datetime.now()}. Valida que \texttt{validar()} rejeita prazos retroativos, testando restricao de logica de negocio.
+
+\subsubsection{Teste 4: Mudanca de status valida}
+Cria tarefa com status \texttt{PENDENTE} e altera para \texttt{EM\_PROGRESSO}. Verifica se property setter permite transicao e estado muda corretamente.
+
+\subsubsection{Teste 5: Rejeicao de status invalido}
+Tenta atribuir valor invalido (string ou numero) para status. Usa \texttt{pytest.raises} para confirmar que setter rejeita dados nao-enum com \texttt{ValueError}.
 
 \subsection{Testes de componente (TaskRepository)}
-Nos testes de \texttt{TaskRepository}, a logica interna do repositorio e real, enquanto a dependencia externa (\texttt{storage}) e mockada.
-\begin{itemize}
-    \item \textbf{Mock}: verificar se \texttt{storage.add()} foi chamado com os argumentos corretos.
-    \item \textbf{Stub}: configurar \texttt{return\_value} de \texttt{storage.get()} para testar delegacao.
-    \item \textbf{Interacao entre metodos}: salvar e depois buscar por id.
-\end{itemize}
+Nos testes de \texttt{TaskRepository}, a logica interna do repositorio e real, enquanto a dependencia externa (\texttt{storage}) e mockada usando \texttt{unittest.mock.Mock}.
+
+\subsubsection{Teste 6: Save atribui ID sequencial}
+Chama \texttt{repo.save(task)} e valida se a tarefa retornada tem \texttt{id = 1}. Testa se repositorio gerencia auto-incremento.
+
+\subsubsection{Teste 7: Save delega para storage.add()}
+Apos \texttt{save()}, verifica se mock foi chamado exatamente uma vez com argumentos \texttt{(1, task)} usando \texttt{mock.add.assert\_called\_once\_with()}. Testa delegacao correta.
+
+\subsubsection{Teste 8: Find by ID usa storage.get()}
+Configura mock para retornar tarefa e chama \texttt{find\_by\_id(1)}. Valida se resultado e a tarefa mockada, testando consulta por ID.
+
+\subsubsection{Teste 9: Sequencia save e find preserva integridade}
+Salva tarefa, moqueia storage para retornar a mesma tarefa, depois busca. Valida que save e find trabalham juntos corretamente. Testa fluxo real de persistencia.
 
 \section{Resultados}
 Comando utilizado:

@@ -63,20 +63,95 @@ Arquivos principais do LAB-08:
     \item \texttt{relatorio.tex}: documentacao deste laboratorio.
 \end{itemize}
 
+\section{Conceitos de Requisicao HTTP e Resposta}
+Uma requisicao HTTP consiste em:
+\begin{itemize}
+    \item \textbf{Metodo}: GET, POST, PATCH, DELETE, etc;
+    \item \textbf{URL}: endpoint da API (ex: \texttt{https://dummyjson.com/posts});
+    \item \textbf{Headers}: metadados como \texttt{Content-Type: application/json};
+    \item \textbf{Body/Payload}: dados enviados (JSON), presente em POST, PATCH, etc;
+    \item \textbf{Parametros}: QueryString ou path parameters.
+\end{itemize}
+
+A resposta HTTP retorna:
+\begin{itemize}
+    \item \textbf{Status Code}: 200 (OK), 201 (Created), 400 (Bad Request), 404 (Not Found), etc;
+    \item \textbf{Headers}: metadados de resposta;
+    \item \textbf{Body}: conteudo JSON com dados ou mensagem de erro;
+    \item \textbf{Tempo de resposta}: quanto tempo levou para retornar.
+\end{itemize}
+
+Cada teste envia uma requisicao e valida aspectos da resposta recebida.
+
 \section{Cenarios de teste implementados}
-Os testes cobrem os seguintes itens:
-\begin{enumerate}
-    \item GET em colecao (\texttt{/posts}) com status 200 e lista nao vazia;
-    \item GET em recurso existente com validacao de schema;
-    \item GET em recurso inexistente (\texttt{/posts/0}) com status 404;
-    \item POST para criacao (\texttt{/posts/add}) com status 201 e identificador no retorno;
-    \item PATCH para atualizacao de campo (\texttt{/posts/1});
-    \item DELETE (\texttt{/posts/1}) com status 200/204;
-    \item envio de payload invalido com retorno 4xx;
-    \item autenticacao em \texttt{/auth/login} com e sem credencial completa;
-    \item uso de \texttt{@pytest.fixture} para payload reutilizavel;
-    \item tempo de resposta inferior a 2 segundos.
-\end{enumerate}
+
+\subsection{1. GET em colecao --- Validar status 200 e lista nao vazia}
+\textbf{Envio}: \texttt{GET /posts} sem body. \\
+\textbf{Validacao}: Status code 200 e resposta contem array \texttt{posts} com elementos. \\
+\textbf{Por que}: Confirma que o endpoint de listagem retorna dados validos.
+
+\subsection{2. GET em recurso existente --- Validacao de schema}
+\textbf{Envio}: \texttt{GET /posts/1} sem body. \\
+\textbf{Resposta esperada}: JSON com campos id, title, body, userId, tags, reactions. \\
+\textbf{Validacao}: Usa \texttt{jsonschema.validate()} para garantir estrutura. \\
+\textbf{Por que}: Assegura que dados retornados estao em formato correto.
+
+\subsection{3. GET em recurso inexistente --- Retorno 404}
+\textbf{Envio}: \texttt{GET /posts/0} (ID invalido). \\
+\textbf{Validacao}: Status code 404. \\
+\textbf{Por que}: Testa tratamento correto de erro quando recurso nao existe.
+
+\subsection{4. POST criando recurso --- Status 201 e identificador}
+\textbf{Envio}: \texttt{POST /posts/add} com payload:
+\begin{lstlisting}
+{"title": "Post de teste", "body": "Corpo de teste", "userId": 1}
+\end{lstlisting}
+\textbf{Resposta esperada}: Status 201 com campo \texttt{id} no body. \\
+\textbf{Por que}: Valida que criar novo recurso retorna identificador para consultas futuras.
+
+\subsection{5. PATCH atualizando campo --- Modificacao parcial}
+\textbf{Envio}: \texttt{PATCH /posts/1} com payload:
+\begin{lstlisting}
+{"title": "Post atualizado"}
+\end{lstlisting}
+\textbf{Validacao}: Status 200 e resposta contem \texttt{title} atualizado. \\
+\textbf{Por que}: Confirma que PATCH permite atualizar apenas campos especificos.
+
+\subsection{6. DELETE removendo recurso --- Status 204}
+\textbf{Envio}: \texttt{DELETE /posts/1} sem body. \\
+\textbf{Validacao}: Status 200, 201 ou 204 (conforme API). \\
+\textbf{Por que}: Testa remocao de recurso retornando status apropriado.
+
+\subsection{7. Payload invalido --- Retorno 4xx}
+\textbf{Envio}: \texttt{POST /auth/login} com payload incompleto:
+\begin{lstlisting}
+{"username": "emilys"}
+\end{lstlisting}
+\textbf{Validacao}: Status entre 400-499 (erro do cliente). \\
+\textbf{Por que}: Confirma que API rejeita dados obrigatorios faltando.
+
+\subsection{8. Autenticacao --- Validacao de token}
+\textbf{Envio}: \texttt{POST /auth/login} com payload:
+\begin{lstlisting}
+{"username": "emilys", "password": "emilyspass"}
+\end{lstlisting}
+\textbf{Resposta esperada}: Status 200 com \texttt{accessToken} no body. \\
+\textbf{Por que}: Valida que login com credenciais corretas retorna token.
+
+\subsection{9. Autenticacao --- Negacao com credencial incompleta}
+\textbf{Envio}: \texttt{POST /auth/login} sem password. \\
+\textbf{Validacao}: Status 400. \\
+\textbf{Por que}: Confirma que faltando password, login e rejeitado.
+
+\subsection{10. Fixture reutilizavel --- Testabilidade}
+\textbf{Conceito}: Define \texttt{@pytest.fixture} que fornece payload padrao reutilizavel. \\
+\textbf{Beneficio}: Evita repeticao de dados de teste entre multiplos testes. \\
+\textbf{Por que}: Demonstra pratica de DRY e facilita manutencao.
+
+\subsection{11. Performance --- Resposta em tempo aceitavel}
+\textbf{Envio}: \texttt{GET /posts/1}. \\
+\textbf{Validacao}: \texttt{response.elapsed.total\_seconds()} $<$ 2.0. \\
+\textbf{Por que}: Assegura que API responde rapidamente, testando requisito nao-funcional.
 
 \section{Exemplo de comando}
 \begin{lstlisting}[language=bash]
